@@ -300,13 +300,10 @@ const BlogDetails = ({ params }) => {
                         Math.floor(
                           splitParagraph(blogDetails?.description).length / 2
                         ) && (
-                        // <blockquote className="border-l-4 border-primaryColor border-spacing-6 italic mb-5">
-                        //  
-                        // </blockquote>
                        
                         <blockquote>
                            
-                           <p className="ml-4">`{blogDetails?.quote}`</p>
+                           <p className="ml-4">{blogDetails?.quote}</p>
                         </blockquote>
                       )}
 

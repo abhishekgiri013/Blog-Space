@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState,useEffect } from "react";
-import john from "../public/img/john.jpg";
+
 
 import { AiOutlineClose } from "react-icons/ai";
 import { usePathname } from "next/navigation";
