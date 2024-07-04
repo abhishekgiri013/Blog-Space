@@ -2,7 +2,7 @@ import React from 'react'
 import ProfileDetails from './ProfileDetails'
 
 async function getUserData(params) {
-    const res = await fetch(`http://localhost:3000/api/user/${params.id}`, {
+    const res = await fetch(`api/user/${params.id}`, {
       cache: "no-store",
     });
   

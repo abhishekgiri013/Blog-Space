@@ -36,7 +36,7 @@ console.log(state)
   useEffect(() => {
     async function fetchBlog() {
       try {
-        const res = await fetch(`http://localhost:3000/api/blog/${params.id}`);
+        const res = await fetch(`api/blog/${params.id}`);
 
         if (res.status === 200) {
           const blogData = await res.json();
@@ -147,7 +147,7 @@ console.log(state)
       };
 
       const response = await fetch(
-        `http://localhost:3000/api/blog/${params.id}`,
+        `api/blog/${params.id}`,
         {
           headers: {
             "Content-Type": "application/json",

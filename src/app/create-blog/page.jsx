@@ -104,7 +104,7 @@ console.log(session)
         authorId: session?.user?._id
       }
 
-      const response = await fetch("http://localhost:3000/api/blog", {
+      const response = await fetch("api/blog", {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${session?.user?.accessToken}`
