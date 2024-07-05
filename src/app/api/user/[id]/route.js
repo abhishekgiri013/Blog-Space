@@ -1,22 +1,27 @@
-// http://localhost:3000/api/user/someid
-
 import { connect } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { verifyJwtToken } from "@/lib/jwt";
 import Blog from "@/models/Blog";
 import User from "@/models/User";
-import { deleteManyPhotos } from "@/actions/uploadAction"; 
+import { deleteManyPhotos } from "@/actions/uploadAction";
 
-export async function PATCH(req, res) {
+export async function PATCH(req) {
   await connect();
 
-  const id = res.params.id;
+  const id = req.nextUrl.pathname.split("/").pop();
   const accessToken = req.headers.get("authorization");
-  const token = accessToken.split(" ")[1];
 
+  if (!accessToken) {
+    return NextResponse.json(
+      { error: "unauthorized (missing token)" },
+      { status: 403 }
+    );
+  }
+
+  const token = accessToken.split(" ")[1];
   const decodedToken = verifyJwtToken(token);
 
-  if (!accessToken || !decodedToken) {
+  if (!decodedToken) {
     return NextResponse.json(
       { error: "unauthorized (wrong or expired token)" },
       { status: 403 }
@@ -34,45 +39,47 @@ export async function PATCH(req, res) {
       );
     }
 
-    const updateUser = await User.findByIdAndUpdate(user?._id, body, {
+    const updatedUser = await User.findByIdAndUpdate(user?._id, body, {
       new: true,
     });
 
-    return NextResponse.json(updateUser, { status: 200 });
+    return NextResponse.json(updatedUser, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ message: "PATCH error" }, { status: 500 });
+    return NextResponse.json({ message: `PATCH error: ${error.message}` }, { status: 500 });
   }
 }
 
-export async function GET(req, res) {
+export async function GET(req) {
   await connect();
 
-  const id = res.params.id;
+  const id = req.nextUrl.pathname.split("/").pop();
 
   try {
     const user = await User.findById(id).select("-password -__v");
 
     return NextResponse.json(user, { status: 200 });
   } catch (error) {
-    return NextResponse.json(
-      { message: "GET error" },
-      {
-        status: 500,
-      }
-    );
+    return NextResponse.json({ message: `GET error: ${error.message}` }, { status: 500 });
   }
 }
 
-export async function DELETE(req, res) {
+export async function DELETE(req) {
   await connect();
 
-  const id = res.params.id;
+  const id = req.nextUrl.pathname.split("/").pop();
   const accessToken = req.headers.get("authorization");
-  const token = accessToken.split(" ")[1];
 
+  if (!accessToken) {
+    return NextResponse.json(
+      { error: "unauthorized (missing token)" },
+      { status: 403 }
+    );
+  }
+
+  const token = accessToken.split(" ")[1];
   const decodedToken = verifyJwtToken(token);
 
-  if (!accessToken || !decodedToken) {
+  if (!decodedToken) {
     return NextResponse.json(
       { error: "unauthorized (wrong or expired token)" },
       { status: 403 }
@@ -102,11 +109,11 @@ export async function DELETE(req, res) {
       .exec();
 
     const finalImageIds = [
-        ...formattedBlogImages,
-        {
-            id: userImages?.avatar?.id
-        }
-    ]
+      ...formattedBlogImages,
+      {
+        id: userImages?.avatar?.id,
+      },
+    ];
 
     await Promise.all([
       User.findOneAndRemove({ _id: decodedToken._id.toString() }),
@@ -119,6 +126,6 @@ export async function DELETE(req, res) {
       { status: 200 }
     );
   } catch (error) {
-    return NextResponse.json({ message: "Delete error" }, { status: 500 });
+    return NextResponse.json({ message: `Delete error: ${error.message}` }, { status: 500 });
   }
 }
